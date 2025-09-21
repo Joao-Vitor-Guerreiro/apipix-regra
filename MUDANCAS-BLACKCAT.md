@@ -130,3 +130,10 @@ curl -X POST http://localhost:3434/gerarpix \
 Todas as alterações foram implementadas com sucesso. O BlackCat agora é o gateway padrão do Paulo! 🎉
 
 
+
+
+
+
+
+
+

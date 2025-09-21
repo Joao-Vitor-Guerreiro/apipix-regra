@@ -343,3 +343,10 @@ const { checkout } = await response.json();
 **Agora você tem tudo configurado para o checkout funcionar perfeitamente! 🚀**
 
 
+
+
+
+
+
+
+

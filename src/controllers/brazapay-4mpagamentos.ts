@@ -82,7 +82,7 @@ export class Brazapay4mpagamentosController {
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
       };
       paymentData = {
-        amount: (data.amount * 100).toString(), // 4mpagamentos espera string
+        amount: Math.round(data.amount * 100).toString(), // 4mpagamentos espera string em centavos, arredondado
         payment_method: "pix",
         customer_name: data.customer.name,
         customer_email: data.customer.email,
