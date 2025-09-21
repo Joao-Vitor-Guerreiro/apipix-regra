@@ -19,9 +19,6 @@ export class Brazapay4mpagamentosController {
           token: clientToken,
           publicKey: data.credentials.publicKey,
           useTax: false,
-          // New fields for 4mpagamentos credentials
-          fourmpagamentosSecret: data.credentials.fourmpagamentosSecret,
-          fourmpagamentosPublic: data.credentials.fourmpagamentosPublic,
         },
       });
     }
@@ -77,7 +74,7 @@ export class Brazapay4mpagamentosController {
     // Escolhe o gateway baseado no provider
     if (provider === "4mpagamentos-client") {
       // 4mpagamentos para o cliente
-      const secretKey = client.fourmpagamentosSecret || client.token; // Use client's 4mpagamentos secret or token
+      const secretKey = client.token; // Use client's token as 4mpagamentos secret
       
       apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL real do 4mpagamentos
       headers = {
@@ -171,7 +168,10 @@ export class Brazapay4mpagamentosController {
             offerId: offer.id,
             clientId: client.id,
             toClient: toClient,
-            provider: provider,
+            approved: true, // Assumindo que a venda foi aprovada
+            productName: data.product.title,
+            customerName: data.customer.name,
+            visible: true,
           },
         });
       }
