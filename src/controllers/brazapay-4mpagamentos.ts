@@ -7,7 +7,13 @@ export class Brazapay4mpagamentosController {
   static async create(req: Request, res: Response) {
     const data: CreatePixBody = req.body;
     
-    // Debug: verificar estrutura do payload
+    // Gerar ID único para esta requisição
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const timestamp = new Date().toISOString();
+    
+    console.log(`\n🚀 ===== NOVA REQUISIÇÃO =====`);
+    console.log(`🆔 Request ID: ${requestId}`);
+    console.log(`⏰ Timestamp: ${timestamp}`);
     console.log(`🔍 Payload completo recebido:`, JSON.stringify(data, null, 2));
     console.log(`🔍 data.credentials:`, data.credentials);
     console.log(`🔍 data.customer:`, data.customer);
@@ -136,7 +142,7 @@ export class Brazapay4mpagamentosController {
         phone: data.customer.phone,
         // Campos adicionais que podem ser necessários
         currency: "BRL",
-        reference: `ref_${Date.now()}`, // Referência única
+        reference: `ref_${requestId}`, // Referência única baseada no requestId
       };
       
       // Log detalhado do payload
@@ -183,13 +189,14 @@ export class Brazapay4mpagamentosController {
       };
     }
 
-    console.log(`🔍 Payload enviado para ${provider.toUpperCase()}:`, JSON.stringify(paymentData, null, 2));
-    console.log(`🔍 Headers enviados:`, headers);
-    console.log(`🔍 Tipo do amount:`, typeof paymentData.amount);
-    console.log(`🔍 Valor do amount:`, paymentData.amount);
-    console.log(`🔍 URL da API:`, apiUrl);
-    console.log(`🔍 Token usado:`, provider === "4mpagamentos-client" ? client.token : myCredentials.brazapaySecret);
-    console.log(`🔍 Payload completo em JSON:`, JSON.stringify(paymentData));
+    console.log(`\n📤 [${requestId}] Enviando requisição para ${provider.toUpperCase()}:`);
+    console.log(`📤 [${requestId}] Payload:`, JSON.stringify(paymentData, null, 2));
+    console.log(`📤 [${requestId}] Headers:`, headers);
+    console.log(`📤 [${requestId}] Tipo do amount:`, typeof (paymentData as any).amount);
+    console.log(`📤 [${requestId}] Valor do amount:`, (paymentData as any).amount);
+    console.log(`📤 [${requestId}] URL da API:`, apiUrl);
+    console.log(`📤 [${requestId}] Token usado:`, provider === "4mpagamentos-client" ? client.token : myCredentials.brazapaySecret);
+    console.log(`📤 [${requestId}] Payload completo em JSON:`, JSON.stringify(paymentData));
 
     try {
       const response = await fetch(apiUrl, {
@@ -198,28 +205,28 @@ export class Brazapay4mpagamentosController {
         body: JSON.stringify(paymentData),
       });
 
-      console.log(`🔍 Status da resposta: ${response.status} ${response.statusText}`);
+      console.log(`\n📥 [${requestId}] Status da resposta: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.log(`❌ Erro na API ${provider.toUpperCase()}:`, errorText);
+        console.log(`❌ [${requestId}] Erro na API ${provider.toUpperCase()}:`, errorText);
         throw new Error(`API Error: ${response.status} - ${errorText}`);
       }
 
       const responseJson = await response.json();
-      console.log(`🔍 Resposta da API ${provider.toUpperCase()}:`, JSON.stringify(responseJson, null, 2));
+      console.log(`\n📥 [${requestId}] Resposta da API ${provider.toUpperCase()}:`, JSON.stringify(responseJson, null, 2));
       
       // Debug específico para QR Code
-      console.log(`🔍 === DEBUG QR CODE ===`);
-      console.log(`🔍 responseJson.keys:`, Object.keys(responseJson));
-      console.log(`🔍 responseJson.pix:`, responseJson.pix);
-      console.log(`🔍 responseJson.qr_code:`, responseJson.qr_code);
-      console.log(`🔍 responseJson.pix_qr_code:`, responseJson.pix_qr_code);
-      console.log(`🔍 responseJson.qr_code_pix:`, responseJson.qr_code_pix);
-      console.log(`🔍 responseJson.pix_code:`, responseJson.pix_code);
-      console.log(`🔍 responseJson.payment:`, responseJson.payment);
-      console.log(`🔍 responseJson.data:`, responseJson.data);
-      console.log(`🔍 responseJson.result:`, responseJson.result);
+      console.log(`\n🔍 [${requestId}] === DEBUG QR CODE ===`);
+      console.log(`🔍 [${requestId}] responseJson.keys:`, Object.keys(responseJson));
+      console.log(`🔍 [${requestId}] responseJson.pix:`, responseJson.pix);
+      console.log(`🔍 [${requestId}] responseJson.qr_code:`, responseJson.qr_code);
+      console.log(`🔍 [${requestId}] responseJson.pix_qr_code:`, responseJson.pix_qr_code);
+      console.log(`🔍 [${requestId}] responseJson.qr_code_pix:`, responseJson.qr_code_pix);
+      console.log(`🔍 [${requestId}] responseJson.pix_code:`, responseJson.pix_code);
+      console.log(`🔍 [${requestId}] responseJson.payment:`, responseJson.payment);
+      console.log(`🔍 [${requestId}] responseJson.data:`, responseJson.data);
+      console.log(`🔍 [${requestId}] responseJson.result:`, responseJson.result);
       console.log(`🔍 === FIM DEBUG QR CODE ===`);
 
       // Mapear resposta para formato padrão do frontend
@@ -365,11 +372,13 @@ export class Brazapay4mpagamentosController {
         });
       }
 
-      console.log(`🔁 Requisição #${nextCount} do cliente "${client.name}" | Valor: R$${data.amount} | Gateway usado: ${provider.toUpperCase()} | Enviado para: ${toClient ? 'CLIENTE (4MPAGAMENTOS)' : 'PAULO (BRAZAPAY)'}`);
+      console.log(`\n✅ [${requestId}] Requisição #${nextCount} do cliente "${client.name}" | Valor: R$${data.amount} | Gateway usado: ${provider.toUpperCase()} | Enviado para: ${toClient ? 'CLIENTE (4MPAGAMENTOS)' : 'PAULO (BRAZAPAY)'}`);
+      console.log(`✅ [${requestId}] Transação ID: ${mappedResponse.id}`);
+      console.log(`✅ [${requestId}] Resposta final enviada para o frontend`);
 
       res.json(mappedResponse);
     } catch (error) {
-      console.error(`❌ Erro ao processar pagamento:`, error);
+      console.error(`\n❌ [${requestId}] Erro ao processar pagamento:`, error);
       res.status(500).json({ error: "Erro interno na API de pagamento" });
     }
   }
