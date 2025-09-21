@@ -99,9 +99,9 @@ export class Brazapay4mpagamentosController {
       console.log(`🔍 Valor original data.amount: ${data.amount}`);
       console.log(`🔍 Tipo de data.amount: ${typeof data.amount}`);
       
-      // Se o valor for maior que 1000, provavelmente já está em centavos
+      // Se o valor for maior que 100, provavelmente já está em centavos
       let amountInCents;
-      if (data.amount > 1000) {
+      if (data.amount > 100) {
         // Já está em centavos, usar diretamente
         amountInCents = Math.round(data.amount).toString();
         console.log(`🔍 Valor já em centavos, usando diretamente: ${amountInCents}`);
@@ -114,11 +114,6 @@ export class Brazapay4mpagamentosController {
       // URL original do 4mpagamentos
       apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL original do 4mpagamentos
       console.log(`🔍 Usando URL: ${apiUrl}`);
-      
-      // Log das credenciais (mascaradas)
-      const maskedKey = secretKey ? `${secretKey.substring(0, 8)}...${secretKey.substring(secretKey.length - 4)}` : 'UNDEFINED';
-      console.log(`🔍 Secret Key (mascarada): ${maskedKey}`);
-      
       headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
@@ -126,15 +121,20 @@ export class Brazapay4mpagamentosController {
       // Validar CPF (remover pontos, traços e espaços)
       const cleanCpf = data.customer.document.number.replace(/[^\d]/g, '');
       
-      // Formato correto para 4mpagamentos (campos planos)
+      // Tentar formato alternativo para 4mpagamentos
       paymentData = {
         amount: amountInCents, // 4mpagamentos espera string em centavos
         payment_method: "pix",
-        customer_name: data.customer.name,
-        customer_email: data.customer.email,
-        customer_cpf: cleanCpf, // CPF limpo, apenas números
+        customer: {
+          name: data.customer.name,
+          email: data.customer.email,
+          document: cleanCpf, // CPF limpo, apenas números
+          phone: data.customer.phone,
+        },
         description: data.product.title,
-        phone: data.customer.phone,
+        // Campos adicionais que podem ser necessários
+        currency: "BRL",
+        reference: `ref_${Date.now()}`, // Referência única
       };
       
       // Log detalhado do payload
@@ -146,9 +146,6 @@ export class Brazapay4mpagamentosController {
       console.log(`  - customer_cpf: ${cleanCpf} (original: ${data.customer.document.number})`);
       console.log(`  - description: ${data.product.title}`);
       console.log(`  - phone: ${data.customer.phone}`);
-      
-      // Log do payload completo
-      console.log(`🔍 Payload completo enviado:`, JSON.stringify(paymentData, null, 2));
     } else {
       // Brazapay para Paulo
       const secretKey = myCredentials.brazapaySecret;
