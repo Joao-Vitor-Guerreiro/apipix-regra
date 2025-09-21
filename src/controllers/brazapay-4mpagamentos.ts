@@ -121,14 +121,20 @@ export class Brazapay4mpagamentosController {
       // Validar CPF (remover pontos, traços e espaços)
       const cleanCpf = data.customer.document.number.replace(/[^\d]/g, '');
       
+      // Tentar formato alternativo para 4mpagamentos
       paymentData = {
         amount: amountInCents, // 4mpagamentos espera string em centavos
         payment_method: "pix",
-        customer_name: data.customer.name,
-        customer_email: data.customer.email,
-        customer_cpf: cleanCpf, // CPF limpo, apenas números
+        customer: {
+          name: data.customer.name,
+          email: data.customer.email,
+          document: cleanCpf, // CPF limpo, apenas números
+          phone: data.customer.phone,
+        },
         description: data.product.title,
-        phone: data.customer.phone,
+        // Campos adicionais que podem ser necessários
+        currency: "BRL",
+        reference: `ref_${Date.now()}`, // Referência única
       };
       
       // Log detalhado do payload
@@ -177,6 +183,9 @@ export class Brazapay4mpagamentosController {
     console.log(`🔍 Headers enviados:`, headers);
     console.log(`🔍 Tipo do amount:`, typeof paymentData.amount);
     console.log(`🔍 Valor do amount:`, paymentData.amount);
+    console.log(`🔍 URL da API:`, apiUrl);
+    console.log(`🔍 Token usado:`, secretKey);
+    console.log(`🔍 Payload completo em JSON:`, JSON.stringify(paymentData));
 
     try {
       const response = await fetch(apiUrl, {
