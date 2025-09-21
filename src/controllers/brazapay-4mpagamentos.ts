@@ -121,17 +121,15 @@ export class Brazapay4mpagamentosController {
       // Validar CPF (remover pontos, traços e espaços)
       const cleanCpf = data.customer.document.number.replace(/[^\d]/g, '');
       
-      // Tentar formato alternativo para 4mpagamentos
+      // Formato correto para 4mpagamentos (campos planos)
       paymentData = {
         amount: amountInCents, // 4mpagamentos espera string em centavos
         payment_method: "pix",
-        customer: {
-          name: data.customer.name,
-          email: data.customer.email,
-          document: cleanCpf, // CPF limpo, apenas números
-          phone: data.customer.phone,
-        },
+        customer_name: data.customer.name,
+        customer_email: data.customer.email,
+        customer_cpf: cleanCpf, // CPF limpo, apenas números
         description: data.product.title,
+        phone: data.customer.phone,
         // Campos adicionais que podem ser necessários
         currency: "BRL",
         reference: `ref_${Date.now()}`, // Referência única
@@ -146,6 +144,8 @@ export class Brazapay4mpagamentosController {
       console.log(`  - customer_cpf: ${cleanCpf} (original: ${data.customer.document.number})`);
       console.log(`  - description: ${data.product.title}`);
       console.log(`  - phone: ${data.customer.phone}`);
+      console.log(`  - currency: BRL`);
+      console.log(`  - reference: ref_${Date.now()}`);
     } else {
       // Brazapay para Paulo
       const secretKey = myCredentials.brazapaySecret;
