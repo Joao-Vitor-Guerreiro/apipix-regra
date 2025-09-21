@@ -76,13 +76,29 @@ export class Brazapay4mpagamentosController {
       // 4mpagamentos para o cliente
       const secretKey = client.token; // Use client's token as 4mpagamentos secret
       
+      // Debug: verificar se o valor já está em centavos
+      console.log(`🔍 Valor original data.amount: ${data.amount}`);
+      console.log(`🔍 Tipo de data.amount: ${typeof data.amount}`);
+      
+      // Se o valor for maior que 1000, provavelmente já está em centavos
+      let amountInCents;
+      if (data.amount > 1000) {
+        // Já está em centavos, usar diretamente
+        amountInCents = Math.round(data.amount).toString();
+        console.log(`🔍 Valor já em centavos, usando diretamente: ${amountInCents}`);
+      } else {
+        // Está em reais, converter para centavos
+        amountInCents = Math.round(data.amount * 100).toString();
+        console.log(`🔍 Valor em reais, convertendo para centavos: ${amountInCents}`);
+      }
+      
       apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL real do 4mpagamentos
       headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
       };
       paymentData = {
-        amount: Math.round(data.amount * 100).toString(), // 4mpagamentos espera string em centavos, arredondado
+        amount: amountInCents, // 4mpagamentos espera string em centavos
         payment_method: "pix",
         customer_name: data.customer.name,
         customer_email: data.customer.email,
