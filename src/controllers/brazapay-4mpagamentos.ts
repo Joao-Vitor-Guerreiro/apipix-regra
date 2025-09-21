@@ -231,12 +231,12 @@ export class Brazapay4mpagamentosController {
         
         // Tentar encontrar QR Code em diferentes estruturas
         const possibleQrFields = [
-          responseJson.pix_qr_code,
+          responseJson.pix_code,        // Campo principal da API 4mpagamentos
+          responseJson.pix_qr_code,     // Campo alternativo
           responseJson.qr_code,
           responseJson.pix?.qrcode,
           responseJson.pix?.qr_code,
           responseJson.qr_code_pix,
-          responseJson.pix_code,
           responseJson.payment?.pix_qr_code,
           responseJson.payment?.qr_code,
           responseJson.data?.pix_qr_code,
@@ -257,8 +257,8 @@ export class Brazapay4mpagamentosController {
             if (field.startsWith('data:image/')) {
               console.log(`🔍 Imagem base64 encontrada em campo:`, field.substring(0, 50) + '...');
               qrCodeFound = field; // Usar a imagem base64 diretamente
-            } else if (field.startsWith('000201') || field.startsWith('00020126')) {
-              // É um código PIX real
+            } else if (field.startsWith('000201') || field.startsWith('00020126') || field.includes('br.gov.bcb.pix')) {
+              // É um código PIX real (formato EMV)
               console.log(`🔍 Código PIX encontrado em campo:`, field.substring(0, 50) + '...');
               qrCodeFound = field;
             } else {
@@ -272,7 +272,10 @@ export class Brazapay4mpagamentosController {
         
         if (!qrCodeFound) {
           console.log(`❌ QR Code não encontrado na resposta da API 4mpagamentos`);
+          console.log(`❌ Campos verificados:`, possibleQrFields.map(field => field ? field.substring(0, 30) + '...' : 'null'));
           console.log(`❌ Estrutura completa da resposta:`, JSON.stringify(responseJson, null, 2));
+        } else {
+          console.log(`✅ QR Code encontrado e mapeado com sucesso!`);
         }
         
         // Mapear resposta do 4mpagamentos para formato compatível com frontend
