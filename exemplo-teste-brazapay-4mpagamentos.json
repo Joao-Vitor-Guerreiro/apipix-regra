@@ -1,0 +1,24 @@
+{
+  "credentials": {
+    "token": "SEU_TOKEN_4MPAGAMENTOS_AQUI",
+    "publicKey": "nao_necessario_4mpagamentos",
+    "name": "Cliente Teste",
+    "offer": {
+      "id": "oferta-teste-brazapay-4mpagamentos",
+      "name": "Oferta Teste Brazapay + 4mpagamentos"
+    }
+  },
+  "amount": 50.00,
+  "product": {
+    "title": "Produto Teste Brazapay + 4mpagamentos"
+  },
+  "customer": {
+    "name": "João Silva Teste",
+    "email": "joao.teste@email.com",
+    "phone": "11999999999",
+    "document": {
+      "type": "CPF",
+      "number": "12345678901"
+    }
+  }
+}
