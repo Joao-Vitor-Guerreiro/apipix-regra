@@ -208,32 +208,69 @@ export class Brazapay4mpagamentosController {
 
       const responseJson = await response.json();
       console.log(`🔍 Resposta da API ${provider.toUpperCase()}:`, JSON.stringify(responseJson, null, 2));
+      
+      // Debug específico para QR Code
+      console.log(`🔍 === DEBUG QR CODE ===`);
+      console.log(`🔍 responseJson.keys:`, Object.keys(responseJson));
+      console.log(`🔍 responseJson.pix:`, responseJson.pix);
+      console.log(`🔍 responseJson.qr_code:`, responseJson.qr_code);
+      console.log(`🔍 responseJson.pix_qr_code:`, responseJson.pix_qr_code);
+      console.log(`🔍 responseJson.qr_code_pix:`, responseJson.qr_code_pix);
+      console.log(`🔍 responseJson.pix_code:`, responseJson.pix_code);
+      console.log(`🔍 responseJson.payment:`, responseJson.payment);
+      console.log(`🔍 responseJson.data:`, responseJson.data);
+      console.log(`🔍 responseJson.result:`, responseJson.result);
+      console.log(`🔍 === FIM DEBUG QR CODE ===`);
 
       // Mapear resposta para formato padrão do frontend
       let mappedResponse = responseJson;
       
       if (provider === "4mpagamentos-client") {
+        // Verificar se há QR Code em campos aninhados
+        let qrCodeFound = null;
+        
+        // Tentar encontrar QR Code em diferentes estruturas
+        const possibleQrFields = [
+          responseJson.pix_qr_code,
+          responseJson.qr_code,
+          responseJson.pix?.qrcode,
+          responseJson.pix?.qr_code,
+          responseJson.qr_code_pix,
+          responseJson.pix_code,
+          responseJson.payment?.pix_qr_code,
+          responseJson.payment?.qr_code,
+          responseJson.data?.pix_qr_code,
+          responseJson.data?.qr_code,
+          responseJson.result?.pix_qr_code,
+          responseJson.result?.qr_code,
+          responseJson.pix_data?.qr_code,
+          responseJson.pix_data?.qrcode
+        ];
+        
+        for (const field of possibleQrFields) {
+          if (field && typeof field === 'string' && field.length > 10) {
+            qrCodeFound = field;
+            console.log(`🔍 QR Code encontrado em campo:`, field.substring(0, 50) + '...');
+            break;
+          }
+        }
+        
+        if (!qrCodeFound) {
+          console.log(`❌ QR Code não encontrado na resposta da API 4mpagamentos`);
+          console.log(`❌ Estrutura completa da resposta:`, JSON.stringify(responseJson, null, 2));
+        }
+        
         // Mapear resposta do 4mpagamentos para formato compatível com frontend
         mappedResponse = {
           id: responseJson.id || responseJson.transaction_id,
           amount: responseJson.amount,
           status: responseJson.status || "pending",
-          // Mapear QR Code do PIX - tentar diferentes campos possíveis
+          // Mapear QR Code do PIX
           pix: {
-            qrcode: responseJson.pix_qr_code || 
-                   responseJson.qr_code || 
-                   responseJson.pix?.qrcode || 
-                   responseJson.pix?.qr_code ||
-                   responseJson.qr_code_pix ||
-                   responseJson.pix_code
+            qrcode: qrCodeFound
           },
           // Campos alternativos para QR Code
-          qr_code: responseJson.pix_qr_code || 
-                   responseJson.qr_code || 
-                   responseJson.pix?.qrcode || 
-                   responseJson.pix?.qr_code ||
-                   responseJson.qr_code_pix ||
-                   responseJson.pix_code,
+          qr_code: qrCodeFound,
           // Outros campos úteis
           customer: {
             name: data.customer.name,
@@ -243,11 +280,16 @@ export class Brazapay4mpagamentosController {
           product: {
             title: data.product.title,
             price: data.amount
+          },
+          // Debug: incluir resposta original para análise
+          debug: {
+            original_response: responseJson,
+            qr_code_found: !!qrCodeFound
           }
         };
         
         console.log(`🔍 Resposta mapeada para 4mpagamentos:`, JSON.stringify(mappedResponse, null, 2));
-        console.log(`🔍 QR Code extraído:`, mappedResponse.pix?.qrcode || mappedResponse.qr_code);
+        console.log(`🔍 QR Code extraído:`, qrCodeFound ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
       } else if (provider === "brazapay-paulo") {
         // Mapear resposta do Brazapay para formato compatível com frontend
         mappedResponse = {
