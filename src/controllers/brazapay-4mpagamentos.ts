@@ -125,6 +125,8 @@ export class Brazapay4mpagamentosController {
 
     console.log(`🔍 Payload enviado para ${provider.toUpperCase()}:`, JSON.stringify(paymentData, null, 2));
     console.log(`🔍 Headers enviados:`, headers);
+    console.log(`🔍 Tipo do amount:`, typeof paymentData.amount);
+    console.log(`🔍 Valor do amount:`, paymentData.amount);
 
     try {
       const response = await fetch(apiUrl, {
