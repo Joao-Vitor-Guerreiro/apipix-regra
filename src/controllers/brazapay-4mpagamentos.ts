@@ -311,10 +311,14 @@ export class Brazapay4mpagamentosController {
         
         console.log(`🔍 Resposta mapeada para 4mpagamentos:`, JSON.stringify(mappedResponse, null, 2));
         console.log(`🔍 QR Code extraído:`, qrCodeFound ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+        console.log(`🔍 Tipo do QR Code encontrado:`, qrCodeFound ? (qrCodeFound.startsWith('data:image/') ? 'IMAGEM_BASE64' : 'CODIGO_PIX') : 'NENHUM');
         console.log(`🔍 Campos pix_code e pix_qr_code mapeados:`, {
           pix_code: mappedResponse.pix_code ? mappedResponse.pix_code.substring(0, 50) + '...' : 'null',
           pix_qr_code: mappedResponse.pix_qr_code ? mappedResponse.pix_qr_code.substring(0, 50) + '...' : 'null'
         });
+        console.log(`🔍 INSTRUÇÕES PARA O CÓDIGO PYTHON:`);
+        console.log(`   - pix_code contém: ${qrCodeFound ? (qrCodeFound.startsWith('000201') ? 'CÓDIGO PIX REAL' : 'IMAGEM BASE64') : 'NENHUM'}`);
+        console.log(`   - pix_qr_code contém: ${qrCodeFound ? (qrCodeFound.startsWith('data:image/') ? 'IMAGEM BASE64' : 'CÓDIGO PIX REAL') : 'NENHUM'}`);
       } else if (provider === "brazapay-paulo") {
         // Mapear resposta do Brazapay para formato compatível com frontend
         mappedResponse = {
