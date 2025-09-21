@@ -111,6 +111,10 @@ export class Brazapay4mpagamentosController {
         console.log(`🔍 Valor em reais, convertendo para centavos: ${amountInCents}`);
       }
       
+      // Log adicional para debug
+      console.log(`🔍 Valor final enviado para 4mpagamentos: ${amountInCents} centavos`);
+      console.log(`🔍 Valor em reais: R$ ${(parseInt(amountInCents) / 100).toFixed(2)}`);
+      
       // URL original do 4mpagamentos
       apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL original do 4mpagamentos
       console.log(`🔍 Usando URL: ${apiUrl}`);
