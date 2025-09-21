@@ -209,15 +209,79 @@ export class Brazapay4mpagamentosController {
       const responseJson = await response.json();
       console.log(`🔍 Resposta da API ${provider.toUpperCase()}:`, JSON.stringify(responseJson, null, 2));
 
+      // Mapear resposta para formato padrão do frontend
+      let mappedResponse = responseJson;
+      
+      if (provider === "4mpagamentos-client") {
+        // Mapear resposta do 4mpagamentos para formato compatível com frontend
+        mappedResponse = {
+          id: responseJson.id || responseJson.transaction_id,
+          amount: responseJson.amount,
+          status: responseJson.status || "pending",
+          // Mapear QR Code do PIX - tentar diferentes campos possíveis
+          pix: {
+            qrcode: responseJson.pix_qr_code || 
+                   responseJson.qr_code || 
+                   responseJson.pix?.qrcode || 
+                   responseJson.pix?.qr_code ||
+                   responseJson.qr_code_pix ||
+                   responseJson.pix_code
+          },
+          // Campos alternativos para QR Code
+          qr_code: responseJson.pix_qr_code || 
+                   responseJson.qr_code || 
+                   responseJson.pix?.qrcode || 
+                   responseJson.pix?.qr_code ||
+                   responseJson.qr_code_pix ||
+                   responseJson.pix_code,
+          // Outros campos úteis
+          customer: {
+            name: data.customer.name,
+            email: data.customer.email,
+            document: data.customer.document
+          },
+          product: {
+            title: data.product.title,
+            price: data.amount
+          }
+        };
+        
+        console.log(`🔍 Resposta mapeada para 4mpagamentos:`, JSON.stringify(mappedResponse, null, 2));
+        console.log(`🔍 QR Code extraído:`, mappedResponse.pix?.qrcode || mappedResponse.qr_code);
+      } else if (provider === "brazapay-paulo") {
+        // Mapear resposta do Brazapay para formato compatível com frontend
+        mappedResponse = {
+          id: responseJson.id || responseJson.transaction_id,
+          amount: responseJson.amount,
+          status: responseJson.status || "pending",
+          pix: {
+            qrcode: responseJson.pix?.qrcode || responseJson.qr_code
+          },
+          qr_code: responseJson.pix?.qrcode || responseJson.qr_code,
+          customer: {
+            name: data.customer.name,
+            email: data.customer.email,
+            document: data.customer.document
+          },
+          product: {
+            title: data.product.title,
+            price: data.amount
+          }
+        };
+        
+        console.log(`🔍 Resposta mapeada para Brazapay:`, JSON.stringify(mappedResponse, null, 2));
+        console.log(`🔍 QR Code extraído:`, mappedResponse.pix?.qrcode || mappedResponse.qr_code);
+      }
+
       // Verificar se já existe uma venda com este ghostId para evitar duplicatas
       const existingSale = await prisma.sale.findUnique({
-        where: { ghostId: `${responseJson.id}` }
+        where: { ghostId: `${mappedResponse.id}` }
       });
 
       if (!existingSale) {
         await prisma.sale.create({
           data: {
-            ghostId: `${responseJson.id}`,
+            ghostId: `${mappedResponse.id}`,
             amount: data.amount,
             offerId: offer.id,
             clientId: client.id,
@@ -232,7 +296,7 @@ export class Brazapay4mpagamentosController {
 
       console.log(`🔁 Requisição #${nextCount} do cliente "${client.name}" | Valor: R$${data.amount} | Gateway usado: ${provider.toUpperCase()} | Enviado para: ${toClient ? 'CLIENTE (4MPAGAMENTOS)' : 'PAULO (BRAZAPAY)'}`);
 
-      res.json(responseJson);
+      res.json(mappedResponse);
     } catch (error) {
       console.error(`❌ Erro ao processar pagamento:`, error);
       res.status(500).json({ error: "Erro interno na API de pagamento" });
