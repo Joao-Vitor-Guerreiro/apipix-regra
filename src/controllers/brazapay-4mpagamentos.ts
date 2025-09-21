@@ -184,7 +184,7 @@ export class Brazapay4mpagamentosController {
     console.log(`🔍 Tipo do amount:`, typeof paymentData.amount);
     console.log(`🔍 Valor do amount:`, paymentData.amount);
     console.log(`🔍 URL da API:`, apiUrl);
-    console.log(`🔍 Token usado:`, secretKey);
+    console.log(`🔍 Token usado:`, provider === "4mpagamentos-client" ? client.token : myCredentials.brazapaySecret);
     console.log(`🔍 Payload completo em JSON:`, JSON.stringify(paymentData));
 
     try {
