@@ -111,9 +111,9 @@ export class Brazapay4mpagamentosController {
         console.log(`🔍 Valor em reais, convertendo para centavos: ${amountInCents}`);
       }
       
-      // Tentar diferentes URLs da API 4mpagamentos
-      apiUrl = "https://api.4mpagamentos.com/v1/payments"; // URL alternativa do 4mpagamentos
-      console.log(`🔍 Tentando URL: ${apiUrl}`);
+      // URL original do 4mpagamentos
+      apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL original do 4mpagamentos
+      console.log(`🔍 Usando URL: ${apiUrl}`);
       headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
