@@ -82,24 +82,13 @@ export class Brazapay4mpagamentosController {
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
       };
       paymentData = {
-        amount: data.amount * 100, // 4mpagamentos usa centavos
+        amount: (data.amount * 100).toString(), // 4mpagamentos espera string
         payment_method: "pix",
-        customer: {
-          name: data.customer.name,
-          email: data.customer.email,
-          document: {
-            type: data.customer.document.type.toLowerCase(),
-            number: data.customer.document.number,
-          },
-          phone: data.customer.phone,
-        },
-        items: [
-          {
-            title: data.product.title,
-            unit_price: data.amount * 100, // 4mpagamentos usa centavos
-            quantity: 1,
-          },
-        ],
+        customer_name: data.customer.name,
+        customer_email: data.customer.email,
+        customer_cpf: data.customer.document.number,
+        description: data.product.title,
+        phone: data.customer.phone,
       };
     } else {
       // Brazapay para Paulo
