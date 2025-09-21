@@ -289,6 +289,9 @@ export class Brazapay4mpagamentosController {
           },
           // Campos alternativos para QR Code
           qr_code: qrCodeFound,
+          // Campos específicos que o código Python da oferta espera
+          pix_code: qrCodeFound,  // Campo principal que o Python procura
+          pix_qr_code: qrCodeFound,  // Campo alternativo que o Python procura
           // Outros campos úteis
           customer: {
             name: data.customer.name,
@@ -308,6 +311,10 @@ export class Brazapay4mpagamentosController {
         
         console.log(`🔍 Resposta mapeada para 4mpagamentos:`, JSON.stringify(mappedResponse, null, 2));
         console.log(`🔍 QR Code extraído:`, qrCodeFound ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+        console.log(`🔍 Campos pix_code e pix_qr_code mapeados:`, {
+          pix_code: mappedResponse.pix_code ? mappedResponse.pix_code.substring(0, 50) + '...' : 'null',
+          pix_qr_code: mappedResponse.pix_qr_code ? mappedResponse.pix_qr_code.substring(0, 50) + '...' : 'null'
+        });
       } else if (provider === "brazapay-paulo") {
         // Mapear resposta do Brazapay para formato compatível com frontend
         mappedResponse = {
