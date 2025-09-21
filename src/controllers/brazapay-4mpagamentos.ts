@@ -6,6 +6,25 @@ import { prisma } from "../config/prisma";
 export class Brazapay4mpagamentosController {
   static async create(req: Request, res: Response) {
     const data: CreatePixBody = req.body;
+    
+    // Debug: verificar estrutura do payload
+    console.log(`🔍 Payload completo recebido:`, JSON.stringify(data, null, 2));
+    console.log(`🔍 data.credentials:`, data.credentials);
+    console.log(`🔍 data.customer:`, data.customer);
+    console.log(`🔍 data.product:`, data.product);
+    
+    if (!data.credentials) {
+      return res.status(400).json({ error: "Credentials são obrigatórias" });
+    }
+    
+    if (!data.customer) {
+      return res.status(400).json({ error: "Customer é obrigatório" });
+    }
+    
+    if (!data.product) {
+      return res.status(400).json({ error: "Product é obrigatório" });
+    }
+    
     const clientToken = data.credentials.token;
 
     let client = await prisma.client.findUnique({
