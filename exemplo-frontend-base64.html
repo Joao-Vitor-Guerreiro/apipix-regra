@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exemplo - QR Code Base64</title>
+</head>
+<body>
+    <h1>Exemplo de como tratar QR Code Base64 no Frontend</h1>
+    
+    <div id="qr-container">
+        <h2>QR Code será exibido aqui:</h2>
+        <img id="qr-image" style="display: none;" />
+        <div id="qr-text" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Função para processar a resposta da API
+        function processApiResponse(apiResponse) {
+            const qrContainer = document.getElementById('qr-container');
+            const qrImage = document.getElementById('qr-image');
+            const qrText = document.getElementById('qr-text');
+            
+            // Verificar se é imagem base64
+            if (apiResponse.pix && apiResponse.pix.qrcode && apiResponse.pix.qrcode.startsWith('data:image/')) {
+                console.log('Imagem base64 detectada');
+                qrImage.src = apiResponse.pix.qrcode;
+                qrImage.style.display = 'block';
+                qrText.style.display = 'none';
+            }
+            // Verificar se é código PIX (string)
+            else if (apiResponse.pix && apiResponse.pix.qrcode && apiResponse.pix.qrcode.startsWith('000201')) {
+                console.log('Código PIX detectado');
+                qrText.textContent = apiResponse.pix.qrcode;
+                qrText.style.display = 'block';
+                qrImage.style.display = 'none';
+            }
+            // Verificar campo alternativo
+            else if (apiResponse.qr_code) {
+                if (apiResponse.qr_code.startsWith('data:image/')) {
+                    console.log('Imagem base64 no campo qr_code');
+                    qrImage.src = apiResponse.qr_code;
+                    qrImage.style.display = 'block';
+                    qrText.style.display = 'none';
+                } else {
+                    console.log('Código PIX no campo qr_code');
+                    qrText.textContent = apiResponse.qr_code;
+                    qrText.style.display = 'block';
+                    qrImage.style.display = 'none';
+                }
+            }
+            else {
+                console.error('QR Code não encontrado na resposta');
+                qrContainer.innerHTML = '<p>Erro: QR Code não encontrado</p>';
+            }
+        }
+        
+        // Exemplo de uso
+        const exemploResposta = {
+            id: "4M236519",
+            pix: {
+                qrcode: "data:image/png;base64,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"
+            },
+            qr_code: "data:image/png;base64,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"
+        };
+        
+        // Processar a resposta
+        processApiResponse(exemploResposta);
+    </script>
+</body>
+</html>

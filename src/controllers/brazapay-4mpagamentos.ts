@@ -244,13 +244,28 @@ export class Brazapay4mpagamentosController {
           responseJson.result?.pix_qr_code,
           responseJson.result?.qr_code,
           responseJson.pix_data?.qr_code,
-          responseJson.pix_data?.qrcode
+          responseJson.pix_data?.qrcode,
+          responseJson.qr_code_image,
+          responseJson.pix_image,
+          responseJson.image,
+          responseJson.qr_image
         ];
         
         for (const field of possibleQrFields) {
           if (field && typeof field === 'string' && field.length > 10) {
-            qrCodeFound = field;
-            console.log(`🔍 QR Code encontrado em campo:`, field.substring(0, 50) + '...');
+            // Verificar se é uma imagem base64
+            if (field.startsWith('data:image/')) {
+              console.log(`🔍 Imagem base64 encontrada em campo:`, field.substring(0, 50) + '...');
+              qrCodeFound = field; // Usar a imagem base64 diretamente
+            } else if (field.startsWith('000201') || field.startsWith('00020126')) {
+              // É um código PIX real
+              console.log(`🔍 Código PIX encontrado em campo:`, field.substring(0, 50) + '...');
+              qrCodeFound = field;
+            } else {
+              // Pode ser outro formato de QR Code
+              console.log(`🔍 QR Code encontrado em campo:`, field.substring(0, 50) + '...');
+              qrCodeFound = field;
+            }
             break;
           }
         }
