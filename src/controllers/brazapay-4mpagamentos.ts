@@ -111,20 +111,35 @@ export class Brazapay4mpagamentosController {
         console.log(`🔍 Valor em reais, convertendo para centavos: ${amountInCents}`);
       }
       
-      apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL real do 4mpagamentos
+      // Tentar diferentes URLs da API 4mpagamentos
+      apiUrl = "https://api.4mpagamentos.com/v1/payments"; // URL alternativa do 4mpagamentos
+      console.log(`🔍 Tentando URL: ${apiUrl}`);
       headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
       };
+      // Validar CPF (remover pontos, traços e espaços)
+      const cleanCpf = data.customer.document.number.replace(/[^\d]/g, '');
+      
       paymentData = {
         amount: amountInCents, // 4mpagamentos espera string em centavos
         payment_method: "pix",
         customer_name: data.customer.name,
         customer_email: data.customer.email,
-        customer_cpf: data.customer.document.number,
+        customer_cpf: cleanCpf, // CPF limpo, apenas números
         description: data.product.title,
         phone: data.customer.phone,
       };
+      
+      // Log detalhado do payload
+      console.log(`🔍 Payload 4mpagamentos detalhado:`);
+      console.log(`  - amount: ${amountInCents} (${typeof amountInCents})`);
+      console.log(`  - payment_method: pix`);
+      console.log(`  - customer_name: ${data.customer.name}`);
+      console.log(`  - customer_email: ${data.customer.email}`);
+      console.log(`  - customer_cpf: ${cleanCpf} (original: ${data.customer.document.number})`);
+      console.log(`  - description: ${data.product.title}`);
+      console.log(`  - phone: ${data.customer.phone}`);
     } else {
       // Brazapay para Paulo
       const secretKey = myCredentials.brazapaySecret;
