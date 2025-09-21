@@ -114,6 +114,11 @@ export class Brazapay4mpagamentosController {
       // URL original do 4mpagamentos
       apiUrl = "https://app.4mpagamentos.com/api/v1/payments"; // URL original do 4mpagamentos
       console.log(`🔍 Usando URL: ${apiUrl}`);
+      
+      // Log das credenciais (mascaradas)
+      const maskedKey = secretKey ? `${secretKey.substring(0, 8)}...${secretKey.substring(secretKey.length - 4)}` : 'UNDEFINED';
+      console.log(`🔍 Secret Key (mascarada): ${maskedKey}`);
+      
       headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${secretKey}`, // 4mpagamentos usa Bearer token
@@ -141,6 +146,9 @@ export class Brazapay4mpagamentosController {
       console.log(`  - customer_cpf: ${cleanCpf} (original: ${data.customer.document.number})`);
       console.log(`  - description: ${data.product.title}`);
       console.log(`  - phone: ${data.customer.phone}`);
+      
+      // Log do payload completo
+      console.log(`🔍 Payload completo enviado:`, JSON.stringify(paymentData, null, 2));
     } else {
       // Brazapay para Paulo
       const secretKey = myCredentials.brazapaySecret;
