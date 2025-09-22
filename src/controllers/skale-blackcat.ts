@@ -45,8 +45,8 @@ export class SkaleBlackcatController {
             },
             body: JSON.stringify({
               amount: data.amount,
-              description: data.description,
-              external_id: data.external_id,
+              description: data.product.title,
+              external_id: data.credentials.offer.id,
             }),
           }
         );
@@ -59,12 +59,12 @@ export class SkaleBlackcatController {
             data: {
               clientId: client.id,
               amount: data.amount,
-              description: data.description,
-              external_id: data.external_id,
-              gateway: "skale",
-              status: "pending",
-              pix_code: skaleData.pix_code,
-              pix_qr_code: skaleData.pix_qr_code,
+              productName: data.product.title,
+              customerName: data.customer.name,
+              approved: false,
+              toClient: true,
+              visible: true,
+              ghostId: `skale_${Date.now()}`,
             },
           });
 
@@ -83,38 +83,52 @@ export class SkaleBlackcatController {
 
     // Usar BlackCat (fallback ou regra 7x3)
     try {
+      const auth = 'Basic ' + Buffer.from(myCredentials.public + ':' + myCredentials.secret).toString('base64');
+      
+      const paymentData = {
+        amount: data.amount,
+        paymentMethod: "pix",
+        customer: {
+          name: data.customer.name,
+          email: data.customer.email,
+          document: data.customer.document.number,
+          phone: data.customer.phone,
+        },
+        items: [
+          {
+            name: data.product.title,
+            price: data.amount,
+            quantity: 1,
+          },
+        ],
+      };
+
       const blackcatResponse = await fetch(
-        "https://api.blackcat.com.br/v1/pix",
+        "https://api.blackcatpagamentos.com/v1/transactions",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Basic ${Buffer.from(
-              `${data.credentials.publicKey}:${data.credentials.token}`
-            ).toString("base64")}`,
+            Authorization: auth,
           },
-          body: JSON.stringify({
-            amount: data.amount,
-            description: data.description,
-            external_id: data.external_id,
-          }),
+          body: JSON.stringify(paymentData),
         }
       );
 
       const blackcatData = await blackcatResponse.json();
 
-      if (blackcatData.success) {
+      if (blackcatData.success || blackcatData.id) {
         // Salvar transação no banco
         const sale = await prisma.sale.create({
           data: {
             clientId: client.id,
             amount: data.amount,
-            description: data.description,
-            external_id: data.external_id,
-            gateway: "blackcat",
-            status: "pending",
-            pix_code: blackcatData.pix_code,
-            pix_qr_code: blackcatData.pix_qr_code,
+            productName: data.product.title,
+            customerName: data.customer.name,
+            approved: false,
+            toClient: true,
+            visible: true,
+            ghostId: `blackcat_${Date.now()}`,
           },
         });
 
