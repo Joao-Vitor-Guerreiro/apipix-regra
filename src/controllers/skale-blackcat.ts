@@ -133,7 +133,7 @@ export class SkaleBlackcatController {
             data.customer.document?.type || (normalizedDocumentNumber.length > 11 ? "cnpj" : "cpf")
           ).toLowerCase();
 
-          // Validação local para evitar 400 "invalid cpf/cnpj" da Skale
+          // Validação local: se inválido, retorna 422 sem alterar o roteamento
           if (normalizedDocumentType === "cpf" && !isValidCPF(normalizedDocumentNumber)) {
             return res.status(422).json({ success: false, message: "Documento inválido (CPF)" });
           }
@@ -216,6 +216,7 @@ export class SkaleBlackcatController {
             });
           } else {
             console.log("Skale falhou, tentando BlackCat...");
+          }
           }
         } catch (error) {
           console.error("Erro Skale:", error);
