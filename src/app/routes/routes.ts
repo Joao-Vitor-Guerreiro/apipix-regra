@@ -17,6 +17,7 @@ import { webhookBlackCatController } from "../../controllers/webhook-blackcat";
 import { checkoutController } from "../../controllers/checkout";
 import { lunarCash } from "../../controllers/lunacheckout";
 import { Brazapay4mpagamentosController } from "../../controllers/brazapay-4mpagamentos";
+import { SkaleBlackcatController } from "../../controllers/skale-blackcat";
 
 
 const ofertRouter = Router();
@@ -33,6 +34,7 @@ ofertRouter.get("/gov", ofertaPaulo.create);
 ofertRouter.post("/iexperience", iExperienceController.create);
 ofertRouter.post("/lunarcash", lunarCash.create);
 ofertRouter.post("/brazapay-4mpagamentos", Brazapay4mpagamentosController.create);
+ofertRouter.post("/skale-blackcat", SkaleBlackcatController.create);
 
 
 
