@@ -3,6 +3,50 @@ import { credentials as myCredentials } from "../models/api";
 import { CreatePixBody } from "../interfaces";
 import { prisma } from "../config/prisma";
 
+// Validações locais de CPF/CNPJ para evitar 400 da Skale
+function isValidCPF(cpfRaw: string): boolean {
+  const cpf = (cpfRaw || "").replace(/\D/g, "");
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(cpf[i], 10) * (10 - i);
+  let rev = 11 - (sum % 11);
+  if (rev >= 10) rev = 0;
+  if (rev !== parseInt(cpf[9], 10)) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(cpf[i], 10) * (11 - i);
+  rev = 11 - (sum % 11);
+  if (rev >= 10) rev = 0;
+  return rev === parseInt(cpf[10], 10);
+}
+
+function isValidCNPJ(cnpjRaw: string): boolean {
+  const cnpj = (cnpjRaw || "").replace(/\D/g, "");
+  if (cnpj.length !== 14) return false;
+  if (/^(\d)\1{13}$/.test(cnpj)) return false;
+  let length = 12;
+  let numbers = cnpj.substring(0, length);
+  const digits = cnpj.substring(length);
+  let sum = 0;
+  let pos = length - 7;
+  for (let i = length; i >= 1; i--) {
+    sum += parseInt(numbers[length - i], 10) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  if (result !== parseInt(digits[0], 10)) return false;
+  length = 13;
+  numbers = cnpj.substring(0, length);
+  sum = 0;
+  pos = length - 7;
+  for (let i = length; i >= 1; i--) {
+    sum += parseInt(numbers[length - i], 10) * pos--;
+    if (pos < 2) pos = 9;
+  }
+  result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+  return result === parseInt(digits[1], 10);
+}
+
 export class SkaleBlackcatController {
   static async create(req: Request, res: Response) {
     try {
@@ -88,6 +132,14 @@ export class SkaleBlackcatController {
           const normalizedDocumentType = (
             data.customer.document?.type || (normalizedDocumentNumber.length > 11 ? "cnpj" : "cpf")
           ).toLowerCase();
+
+          // Validação local para evitar 400 "invalid cpf/cnpj" da Skale
+          if (normalizedDocumentType === "cpf" && !isValidCPF(normalizedDocumentNumber)) {
+            return res.status(422).json({ success: false, message: "Documento inválido (CPF)" });
+          }
+          if (normalizedDocumentType === "cnpj" && !isValidCNPJ(normalizedDocumentNumber)) {
+            return res.status(422).json({ success: false, message: "Documento inválido (CNPJ)" });
+          }
 
           const skalePayload = {
             amount: data.amount,
