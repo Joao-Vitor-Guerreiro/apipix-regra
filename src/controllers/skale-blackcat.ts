@@ -46,6 +46,10 @@ export class SkaleBlackcatController {
             paymentMethod: "pix",
             description: productTitle,
             external_id: data.credentials.offer.id,
+            customer: {
+              name: data.customer.name,
+              email: data.customer.email,
+            },
             items: [
               {
                 title: productTitle,
@@ -78,6 +82,9 @@ export class SkaleBlackcatController {
 
           if (skaleData.success) {
             console.log("Skale sucesso! Salvando no banco...");
+            // Usar o ID da transação do Skale como ghostId
+            const transactionId = skaleData.id || skaleData.transaction_id || skaleData.payment_id;
+            
             // Salvar transação no banco
             const sale = await prisma.sale.create({
               data: {
@@ -88,11 +95,12 @@ export class SkaleBlackcatController {
                 approved: false,
                 toClient: true,
                 visible: true,
-                ghostId: `skale_${Date.now()}`,
+                ghostId: transactionId.toString(),
               },
             });
 
             console.log("Sale criado com ID:", sale.id);
+            console.log("GhostId salvo:", transactionId);
             return res.json({
               success: true,
               gateway: "skale",
@@ -161,6 +169,9 @@ export class SkaleBlackcatController {
 
         if (blackcatData.success || blackcatData.id) {
           console.log("BlackCat sucesso! Salvando no banco...");
+          // Usar o ID da transação do BlackCat como ghostId
+          const transactionId = blackcatData.id || blackcatData.transaction_id || blackcatData.payment_id;
+          
           // Salvar transação no banco
           const sale = await prisma.sale.create({
             data: {
@@ -171,11 +182,12 @@ export class SkaleBlackcatController {
               approved: false,
               toClient: true,
               visible: true,
-              ghostId: `blackcat_${Date.now()}`,
+              ghostId: transactionId.toString(),
             },
           });
 
           console.log("Sale criado com ID:", sale.id);
+          console.log("GhostId salvo:", transactionId);
           return res.json({
             success: true,
             gateway: "blackcat",
