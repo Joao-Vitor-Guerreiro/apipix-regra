@@ -40,9 +40,10 @@ export class SkaleBlackcatController {
         // Usar Skale
         console.log("=== TENTANDO SKALE ===");
         try {
+          const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
           const skalePayload = {
             amount: data.amount,
-            description: data.product.title,
+            description: productTitle,
             external_id: data.credentials.offer.id,
           };
           
@@ -73,7 +74,7 @@ export class SkaleBlackcatController {
               data: {
                 clientId: client.id,
                 amount: data.amount,
-                productName: data.product.title,
+                productName: productTitle,
                 customerName: data.customer.name,
                 approved: false,
                 toClient: true,
@@ -102,6 +103,7 @@ export class SkaleBlackcatController {
       console.log("=== TENTANDO BLACKCAT ===");
       try {
         const auth = 'Basic ' + Buffer.from(myCredentials.public + ':' + myCredentials.secret).toString('base64');
+        const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
         
         const paymentData = {
           amount: data.amount,
@@ -114,7 +116,7 @@ export class SkaleBlackcatController {
           },
           items: [
             {
-              name: data.product.title,
+              name: productTitle,
               price: data.amount,
               quantity: 1,
             },
@@ -147,7 +149,7 @@ export class SkaleBlackcatController {
             data: {
               clientId: client.id,
               amount: data.amount,
-              productName: data.product.title,
+              productName: productTitle,
               customerName: data.customer.name,
               approved: false,
               toClient: true,

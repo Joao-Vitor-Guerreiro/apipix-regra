@@ -11,9 +11,18 @@ export interface CreatePixBody {
     };
   };
   amount: number;
-  product: {
+  description?: string;
+  product?: {
     title: string;
   };
+  items?: Array<{
+    title: string;
+    name: string;
+    price: number;
+    unitPrice: number;
+    quantity: number;
+    tangible: boolean;
+  }>;
   customer: {
     phone: string;
     name: string;

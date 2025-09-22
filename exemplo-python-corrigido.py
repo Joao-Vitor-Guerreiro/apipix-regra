@@ -123,3 +123,4 @@ print(f"PIX Code: {resultado.get('pixCode', 'N/A')[:50]}...")
 print(f"QR Image: {resultado.get('pixQrCode', 'N/A')[:50]}...")
 
 
+
