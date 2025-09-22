@@ -215,14 +215,15 @@ export class SkaleBlackcatController {
               sale_id: sale.id,
             });
           } else {
-            console.log("Skale falhou, tentando BlackCat...");
+            console.log("Skale falhou.");
           }
         } catch (error) {
           console.error("Erro Skale:", error);
         }
       }
 
-      // Usar BlackCat (Paulo) quando a regra exigir
+      // Usar BlackCat (Paulo) apenas quando a regra exigir
+      if (route === "blackcat") {
       console.log("=== TENTANDO BLACKCAT ===");
       try {
         const auth = 'Basic ' + Buffer.from(myCredentials.public + ':' + myCredentials.secret).toString('base64');
@@ -307,6 +308,7 @@ export class SkaleBlackcatController {
         }
       } catch (error) {
         console.error("Erro BlackCat:", error);
+      }
       }
 
       console.log("=== AMBOS GATEWAYS FALHARAM ===");
