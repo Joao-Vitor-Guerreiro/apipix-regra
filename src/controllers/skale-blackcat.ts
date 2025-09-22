@@ -49,6 +49,11 @@ export class SkaleBlackcatController {
             customer: {
               name: data.customer.name,
               email: data.customer.email,
+              document: {
+                type: (data.customer.document?.type || "cpf").toLowerCase(),
+                number: data.customer.document?.number,
+              },
+              phone: data.customer.phone,
             },
             items: [
               {
