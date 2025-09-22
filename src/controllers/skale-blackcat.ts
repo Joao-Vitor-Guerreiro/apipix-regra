@@ -41,6 +41,13 @@ export class SkaleBlackcatController {
         console.log("=== TENTANDO SKALE ===");
         try {
           const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
+          // Normaliza documento do cliente para atender às validações da Skale
+          const rawDocumentNumber = String(data.customer.document?.number || "");
+          const normalizedDocumentNumber = rawDocumentNumber.replace(/\D/g, "");
+          const normalizedDocumentType = (
+            data.customer.document?.type || (normalizedDocumentNumber.length > 11 ? "cnpj" : "cpf")
+          ).toLowerCase();
+
           const skalePayload = {
             amount: data.amount,
             paymentMethod: "pix",
@@ -50,8 +57,8 @@ export class SkaleBlackcatController {
               name: data.customer.name,
               email: data.customer.email,
               document: {
-                type: (data.customer.document?.type || "cpf").toLowerCase(),
-                number: data.customer.document?.number,
+                type: normalizedDocumentType,
+                number: normalizedDocumentNumber,
               },
               phone: data.customer.phone,
             },
