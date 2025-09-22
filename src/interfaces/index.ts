@@ -4,6 +4,7 @@ export interface CreatePixBody {
     name: string;
     publicKey?: string;
     organizationId?: string;
+    useTax?: boolean;
     offer: {
       id: string;
       name: string;

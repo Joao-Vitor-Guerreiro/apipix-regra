@@ -18,6 +18,7 @@ export class SkaleBlackcatController {
           name: data.credentials.name,
           token: clientToken,
           publicKey: data.credentials.publicKey,
+          useTax: data.credentials.useTax || false,
         },
       });
     }
