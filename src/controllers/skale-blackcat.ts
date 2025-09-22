@@ -111,7 +111,10 @@ export class SkaleBlackcatController {
           customer: {
             name: data.customer.name,
             email: data.customer.email,
-            document: data.customer.document.number,
+            document: {
+              type: data.customer.document.type,
+              number: data.customer.document.number,
+            },
             phone: data.customer.phone,
           },
           items: [
