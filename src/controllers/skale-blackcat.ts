@@ -189,12 +189,25 @@ export class SkaleBlackcatController {
           console.log("Resposta Skale (raw):", skaleRaw);
           console.log("Resposta Skale (parsed):", JSON.stringify(skaleData, null, 2));
 
-          if (skaleData.success) {
+          // Normaliza payload: alguns retornos de sucesso vêm sem "success",
+          // e às vezes o objeto de transação vem dentro de "error" (nosso código atual tratava como erro)
+          const transactionPayload = (
+            skaleStatus === 200 && skaleData && typeof skaleData === "object" && skaleData.error && !skaleData.success
+          ) ? skaleData.error : skaleData;
+
+          const pixCodeCandidate = transactionPayload?.pix?.qrcode
+            || transactionPayload?.pix_qrcode
+            || transactionPayload?.qrcode
+            || transactionPayload?.pix_code
+            || transactionPayload?.pix_qr_code;
+          const isWaitingPayment = typeof transactionPayload?.status === "string"
+            && transactionPayload.status.toLowerCase().includes("waiting");
+          const hasTransactionId = Boolean(transactionPayload?.id);
+
+          if (skaleResponse.ok && (pixCodeCandidate || isWaitingPayment || hasTransactionId)) {
             console.log("Skale sucesso! Salvando no banco...");
-            // Usar o ID da transação do Skale como ghostId
-            const transactionId = skaleData.id || skaleData.transaction_id || skaleData.payment_id;
-            
-            // Salvar transação no banco
+            const transactionId = String(transactionPayload.id || transactionPayload.transaction_id || transactionPayload.payment_id || "");
+
             const sale = await prisma.sale.create({
               data: {
                 clientId: client.id,
@@ -204,7 +217,7 @@ export class SkaleBlackcatController {
                 approved: false,
                 toClient: true,
                 visible: true,
-                ghostId: transactionId.toString(),
+                ghostId: transactionId,
                 offerId: offer.id,
               },
             });
@@ -214,23 +227,23 @@ export class SkaleBlackcatController {
             return res.json({
               success: true,
               gateway: "skale",
-              pix_code: skaleData.pix_code,
-              pix_qr_code: skaleData.pix_qr_code,
+              pix_code: pixCodeCandidate || "",
+              pix_qr_code: transactionPayload?.pix_qr_code || "",
               sale_id: sale.id,
             });
-          } else {
-            console.error("Skale falhou.", {
-              status: skaleStatus,
-              message: skaleData?.message,
-              error: skaleData?.error || skaleData,
-            });
-            return res.status(skaleStatus || 502).json({
-              success: false,
-              gateway: "skale",
-              message: skaleData?.message || "Skale error",
-              error: skaleData?.error || skaleData,
-            });
           }
+
+          console.error("Skale falhou.", {
+            status: skaleStatus,
+            message: skaleData?.message,
+            error: skaleData?.error || skaleData,
+          });
+          return res.status(skaleStatus || 502).json({
+            success: false,
+            gateway: "skale",
+            message: skaleData?.message || "Skale error",
+            error: skaleData?.error || skaleData,
+          });
         } catch (error) {
           console.error("Erro Skale:", error);
         }
