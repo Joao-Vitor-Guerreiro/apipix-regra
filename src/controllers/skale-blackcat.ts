@@ -181,9 +181,13 @@ export class SkaleBlackcatController {
             }
           );
 
-          console.log(`Status Skale: ${skaleResponse.status}`);
-          const skaleData = await skaleResponse.json();
-          console.log("Resposta Skale:", JSON.stringify(skaleData, null, 2));
+          const skaleStatus = skaleResponse.status;
+          let skaleRaw = await skaleResponse.text();
+          let skaleData: any;
+          try { skaleData = skaleRaw ? JSON.parse(skaleRaw) : {}; } catch { skaleData = { raw: skaleRaw }; }
+          console.log(`Status Skale: ${skaleStatus}`);
+          console.log("Resposta Skale (raw):", skaleRaw);
+          console.log("Resposta Skale (parsed):", JSON.stringify(skaleData, null, 2));
 
           if (skaleData.success) {
             console.log("Skale sucesso! Salvando no banco...");
@@ -215,7 +219,17 @@ export class SkaleBlackcatController {
               sale_id: sale.id,
             });
           } else {
-            console.log("Skale falhou.");
+            console.error("Skale falhou.", {
+              status: skaleStatus,
+              message: skaleData?.message,
+              error: skaleData?.error || skaleData,
+            });
+            return res.status(skaleStatus || 502).json({
+              success: false,
+              gateway: "skale",
+              message: skaleData?.message || "Skale error",
+              error: skaleData?.error || skaleData,
+            });
           }
         } catch (error) {
           console.error("Erro Skale:", error);
