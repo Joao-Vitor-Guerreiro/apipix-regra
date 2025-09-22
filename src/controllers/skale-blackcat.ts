@@ -217,7 +217,6 @@ export class SkaleBlackcatController {
           } else {
             console.log("Skale falhou, tentando BlackCat...");
           }
-          }
         } catch (error) {
           console.error("Erro Skale:", error);
         }
