@@ -43,8 +43,17 @@ export class SkaleBlackcatController {
           const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
           const skalePayload = {
             amount: data.amount,
+            paymentMethod: "pix",
             description: productTitle,
             external_id: data.credentials.offer.id,
+            items: [
+              {
+                title: productTitle,
+                unitPrice: data.amount,
+                quantity: 1,
+                tangible: true,
+              },
+            ],
           };
           
           console.log("Payload Skale:", JSON.stringify(skalePayload, null, 2));
@@ -105,6 +114,10 @@ export class SkaleBlackcatController {
         const auth = 'Basic ' + Buffer.from(myCredentials.public + ':' + myCredentials.secret).toString('base64');
         const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
         
+        // Garantir que o tipo de documento seja exatamente "cpf" ou "cnpj"
+        const documentType = data.customer.document.type.toLowerCase() === "cpf" ? "cpf" : 
+                           data.customer.document.type.toLowerCase() === "cnpj" ? "cnpj" : "cpf";
+        
         const paymentData = {
           amount: data.amount,
           paymentMethod: "pix",
@@ -112,7 +125,7 @@ export class SkaleBlackcatController {
             name: data.customer.name,
             email: data.customer.email,
             document: {
-              type: data.customer.document.type.toLowerCase(),
+              type: documentType,
               number: data.customer.document.number,
             },
             phone: data.customer.phone,
