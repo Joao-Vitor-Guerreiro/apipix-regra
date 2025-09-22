@@ -27,20 +27,61 @@ export class SkaleBlackcatController {
       });
     }
 
-      // Regra 7x3: A cada 7 transações, 3 vão para Skale, 4 para BlackCat
-      const totalTransactions = await prisma.sale.count({
-        where: { clientId: client.id },
-      });
+      // Busca ou cria a oferta (mesma lógica do iexperience.ts)
+      let offer: any;
+      const offerInfo = data.credentials.offer;
+      const productTitleBase = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
 
-      console.log(`Total de transações do cliente: ${totalTransactions}`);
-      const useSkale = (totalTransactions % 7) < 3;
-      console.log(`Usar Skale: ${useSkale}`);
+      if (offerInfo && offerInfo.id && offerInfo.name) {
+        offer = await prisma.offer.findUnique({ where: { id: offerInfo.id } });
+        if (!offer) {
+          offer = await prisma.offer.create({
+            data: {
+              id: offerInfo.id,
+              name: offerInfo.name,
+              useTax: data.credentials.useTax || false,
+              clientId: client.id,
+            },
+          });
+        }
+      } else {
+        const normalized = productTitleBase.toLowerCase();
+        let inferredName = "";
+        if (normalized.includes("ebook")) inferredName = "Pix do Milhão";
+        else if (normalized.includes("jibbitz")) inferredName = "Crocs";
+        else if (normalized.includes("bracelete")) inferredName = "Pandora";
+        else if (normalized.includes("kit labial")) inferredName = "Sephora";
+        else inferredName = "Oferta Padrão";
 
-      if (useSkale) {
+        offer = await prisma.offer.findFirst({
+          where: { name: inferredName, clientId: client.id },
+        });
+        if (!offer) {
+          offer = await prisma.offer.create({
+            data: { name: inferredName, useTax: data.credentials.useTax || false, clientId: client.id },
+          });
+        }
+      }
+
+      // Regra 7x3 idêntica ao iexperience.ts (ciclo de 11: 7 cliente, 3 Paulo)
+      const totalSales = await prisma.sale.count({ where: { offerId: offer.id } });
+      const nextCount = totalSales + 1;
+      const cycle = nextCount % 11;
+      let route: "skale" | "blackcat" = "skale";
+      if (cycle < 7) {
+        route = "skale"; // cliente
+      } else if (cycle < 10) {
+        route = offer.useTax ? "blackcat" : "skale"; // Paulo se taxa ativa
+      } else {
+        route = "skale";
+      }
+      console.log(`Regra 7x3 -> nextCount: ${nextCount}, cycle: ${cycle}, route: ${route}`);
+
+      if (route === "skale") {
         // Usar Skale
         console.log("=== TENTANDO SKALE ===");
         try {
-          const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
+          const productTitle = productTitleBase;
           // Normaliza documento do cliente para atender às validações da Skale
           const rawDocumentNumber = String(data.customer.document?.number || "");
           const normalizedDocumentNumber = rawDocumentNumber.replace(/\D/g, "");
@@ -108,6 +149,7 @@ export class SkaleBlackcatController {
                 toClient: true,
                 visible: true,
                 ghostId: transactionId.toString(),
+                offerId: offer.id,
               },
             });
 
@@ -128,11 +170,11 @@ export class SkaleBlackcatController {
         }
       }
 
-      // Usar BlackCat (fallback ou regra 7x3)
+      // Usar BlackCat (Paulo) quando a regra exigir
       console.log("=== TENTANDO BLACKCAT ===");
       try {
         const auth = 'Basic ' + Buffer.from(myCredentials.public + ':' + myCredentials.secret).toString('base64');
-        const productTitle = data.items?.[0]?.title || data.product?.title || data.description || "Produto";
+        const productTitle = productTitleBase;
         
         // Garantir que o tipo de documento seja exatamente "cpf" ou "cnpj"
         const documentType = data.customer.document.type.toLowerCase() === "cpf" ? "cpf" : 
@@ -192,9 +234,10 @@ export class SkaleBlackcatController {
               productName: productTitle,
               customerName: data.customer.name,
               approved: false,
-              toClient: true,
+              toClient: false,
               visible: true,
               ghostId: transactionId.toString(),
+              offerId: offer.id,
             },
           });
 
