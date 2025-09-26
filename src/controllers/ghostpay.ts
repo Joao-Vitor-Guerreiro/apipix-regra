@@ -161,25 +161,31 @@ export class GhostPayController {
       };
     } else {
       // Configuração GhostPay para Cliente
-      apiUrl = "https://app.ghostspaysv1.com/api/v1/transaction.purchase";
+      apiUrl = "https://api.ghostspaysv2.com/functions/v1/transactions";
+      
+      // Autenticação GhostPay: Basic Auth com SECRET_KEY:COMPANY_ID
+      const credentials = Buffer.from(`${tokenToUse}:${publicKeyToUse}`).toString('base64');
+      const auth = `Basic ${credentials}`;
+      
       headers = {
         "Content-Type": "application/json",
-        Authorization: tokenToUse,
+        "Authorization": auth,
       };
       paymentData = {
-        name: data.customer.name,
-        email: data.customer.email,
-        cpf: data.customer.document.number,
-        phone: data.customer.phone,
+        customer: {
+          name: data.customer.name,
+          email: data.customer.email,
+          document: data.customer.document.number,
+          phone: data.customer.phone,
+        },
         paymentMethod: "PIX",
         amount: data.amount,
-        traceable: true,
+        description: data.product.title,
         items: [
           {
-            unitPrice: data.amount,
-            title: data.product.title,
+            name: data.product.title,
+            price: data.amount,
             quantity: 1,
-            tangible: false,
           },
         ],
       };
@@ -187,9 +193,17 @@ export class GhostPayController {
 
     console.log(`🔧 Configuração ${provider.toUpperCase()}:`);
     console.log(`   API URL: ${apiUrl}`);
-    console.log(`   Token usado: ${tokenToUse.substring(0, 20)}...`);
+    console.log(`   Secret Key: ${tokenToUse.substring(0, 20)}...`);
+    console.log(`   Company ID: ${publicKeyToUse}`);
     console.log(`   Provider: ${provider}`);
     console.log(`   Para cliente: ${toClient ? "SIM" : "NÃO"}`);
+    
+    if (provider === "ghost") {
+      const credentials = Buffer.from(`${tokenToUse}:${publicKeyToUse}`).toString('base64');
+      console.log(`   Auth Basic: Basic ${credentials.substring(0, 20)}...`);
+    }
+    
+    console.log(`   Headers:`, JSON.stringify(headers, null, 2));
 
     try {
       // 5️⃣ Chama API (GhostPay ou BlackCat)
