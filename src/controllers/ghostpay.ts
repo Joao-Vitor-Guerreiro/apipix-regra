@@ -213,7 +213,23 @@ export class GhostPayController {
         body: JSON.stringify(paymentData),
       });
 
-      const responseJson = await response.json();
+      let responseJson;
+      try {
+        const responseText = await response.text();
+        console.log(`📡 Resposta RAW ${provider.toUpperCase()}:`, responseText);
+        
+        if (responseText) {
+          responseJson = JSON.parse(responseText);
+        } else {
+          responseJson = {};
+        }
+      } catch (parseError) {
+        console.error(`❌ Erro ao fazer parse da resposta ${provider.toUpperCase()}:`, parseError);
+        return res.status(500).json({
+          error: `Erro ao processar resposta da API ${provider.toUpperCase()}`,
+          details: "Resposta não é um JSON válido"
+        });
+      }
 
       console.log(`📡 Resposta ${provider.toUpperCase()}:`, JSON.stringify(responseJson, null, 2));
 
@@ -227,10 +243,12 @@ export class GhostPayController {
       }
 
       // 6️⃣ Salva venda no banco
+      const ghostId = responseJson.id || responseJson.transaction_id || responseJson.payment_id || `ghost_${Date.now()}`;
+      
       const sale = await prisma.sale.create({
         data: {
           amount: data.amount,
-          ghostId: `${responseJson.id}`,
+          ghostId: `${ghostId}`,
           approved: false,
           customerName: data.customer.name,
           productName: data.product.title,
