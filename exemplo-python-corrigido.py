@@ -132,3 +132,4 @@ print(f"QR Image: {resultado.get('pixQrCode', 'N/A')[:50]}...")
 
 
 
+
