@@ -8,6 +8,7 @@ import { prisma } from "../../config/prisma";
 
 import { credentials } from "../../models/api";
 import { webhookSkaleController } from "../../controllers/webhook-skale";
+import { webhookGhostPayController } from "../../controllers/webhook-ghostpay";
 
 import { iExperienceController } from "../../controllers/iexperience";
 
@@ -18,6 +19,7 @@ import { checkoutController } from "../../controllers/checkout";
 import { lunarCash } from "../../controllers/lunacheckout";
 import { Brazapay4mpagamentosController } from "../../controllers/brazapay-4mpagamentos";
 import { SkaleBlackcatController } from "../../controllers/skale-blackcat";
+import { GhostPayController } from "../../controllers/ghostpay";
 
 
 const ofertRouter = Router();
@@ -35,6 +37,7 @@ ofertRouter.post("/iexperience", iExperienceController.create);
 ofertRouter.post("/lunarcash", lunarCash.create);
 ofertRouter.post("/brazapay-4mpagamentos", Brazapay4mpagamentosController.create);
 ofertRouter.post("/skale-blackcat", SkaleBlackcatController.create);
+ofertRouter.post("/ghostpay", GhostPayController.create);
 
 
 
@@ -82,6 +85,7 @@ ofertRouter.post("/webhook", webhookController.main);
 ofertRouter.post("/webhook-skale", webhookSkaleController.main);
 ofertRouter.post("/webhook-masterpay", webhookMasterPayController.main);
 ofertRouter.post("/webhook-blackcat", webhookBlackCatController.main);
+ofertRouter.post("/webhook-ghostpay", webhookGhostPayController.main);
 
 ofertRouter.post("/checkout", checkoutController.main);
 ofertRouter.post("/checkout/update", checkoutController.updateCheckout);

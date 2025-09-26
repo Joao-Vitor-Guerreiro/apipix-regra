@@ -326,8 +326,8 @@ export class SkaleBlackcatController {
           return res.json({
             success: true,
             gateway: "blackcat",
-            pix_code: blackcatData.pix_code,
-            pix_qr_code: blackcatData.pix_qr_code,
+            pix_code: blackcatData.pix_code || blackcatData.qrcode || blackcatData.pix_qrcode || "",
+            pix_qr_code: blackcatData.pix_qr_code || "",
             sale_id: sale.id,
           });
         } else {
