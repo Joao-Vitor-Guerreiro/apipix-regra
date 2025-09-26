@@ -5,9 +5,6 @@ import { prisma } from "../config/prisma";
 
 export class GhostPayController {
   static async create(req: Request, res: Response) {
-    const data: CreatePixBody = req.body;
-    const clientToken = data.credentials.token;
-
     // Gerar ID único para esta requisição
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const timestamp = new Date().toISOString();
@@ -15,20 +12,36 @@ export class GhostPayController {
     console.log(`\n🚀 ===== NOVA REQUISIÇÃO GHOSTPAY =====`);
     console.log(`🆔 Request ID: ${requestId}`);
     console.log(`⏰ Timestamp: ${timestamp}`);
-    console.log(`🔍 Payload completo recebido:`, JSON.stringify(data, null, 2));
+    console.log(`🔍 Payload completo recebido:`, JSON.stringify(req.body, null, 2));
 
-    // Validação dos dados obrigatórios
+    // Validação robusta dos dados obrigatórios
+    if (!req.body) {
+      return res.status(400).json({ error: "Body da requisição é obrigatório" });
+    }
+
+    const data: CreatePixBody = req.body;
+
     if (!data.credentials) {
+      console.error(`❌ Credentials não encontradas no payload`);
       return res.status(400).json({ error: "Credentials são obrigatórias" });
     }
     
+    if (!data.credentials.token) {
+      console.error(`❌ Token não encontrado em credentials`);
+      return res.status(400).json({ error: "Token é obrigatório em credentials" });
+    }
+    
     if (!data.customer) {
+      console.error(`❌ Customer não encontrado no payload`);
       return res.status(400).json({ error: "Customer é obrigatório" });
     }
     
     if (!data.product) {
+      console.error(`❌ Product não encontrado no payload`);
       return res.status(400).json({ error: "Product é obrigatório" });
     }
+
+    const clientToken = data.credentials.token;
 
     // 1️⃣ Verifica e cria o cliente se não existir
     let client = await prisma.client.findUnique({
