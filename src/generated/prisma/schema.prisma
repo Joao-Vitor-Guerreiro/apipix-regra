@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   output        = "../src/generated/prisma"
@@ -33,9 +27,9 @@ model Client {
   token       String   @unique
   publicKey   String?
   useTax      Boolean
-  sales       Sale[]
-  offers      Offer[]
   createdAt   DateTime @default(now())
+  offers      Offer[]
+  sales       Sale[]
 }
 
 model Sale {
@@ -49,8 +43,8 @@ model Sale {
   toClient     Boolean
   createdAt    DateTime @default(now())
   clientId     String
-  client       Client   @relation(fields: [clientId], references: [id])
   offerId      String?
+  client       Client   @relation(fields: [clientId], references: [id])
   offer        Offer?   @relation(fields: [offerId], references: [id])
 }
 

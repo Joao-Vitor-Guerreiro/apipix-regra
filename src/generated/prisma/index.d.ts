@@ -1164,13 +1164,13 @@ export namespace Prisma {
    */
 
   export type ClientCountOutputType = {
-    sales: number
     offers: number
+    sales: number
   }
 
   export type ClientCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sales?: boolean | ClientCountOutputTypeCountSalesArgs
     offers?: boolean | ClientCountOutputTypeCountOffersArgs
+    sales?: boolean | ClientCountOutputTypeCountSalesArgs
   }
 
   // Custom InputTypes
@@ -1187,15 +1187,15 @@ export namespace Prisma {
   /**
    * ClientCountOutputType without action
    */
-  export type ClientCountOutputTypeCountSalesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: SaleWhereInput
+  export type ClientCountOutputTypeCountOffersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OfferWhereInput
   }
 
   /**
    * ClientCountOutputType without action
    */
-  export type ClientCountOutputTypeCountOffersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: OfferWhereInput
+  export type ClientCountOutputTypeCountSalesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SaleWhereInput
   }
 
 
@@ -2484,8 +2484,8 @@ export namespace Prisma {
     publicKey?: boolean
     useTax?: boolean
     createdAt?: boolean
-    sales?: boolean | Client$salesArgs<ExtArgs>
     offers?: boolean | Client$offersArgs<ExtArgs>
+    sales?: boolean | Client$salesArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["client"]>
 
@@ -2521,8 +2521,8 @@ export namespace Prisma {
 
   export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "token" | "publicKey" | "useTax" | "createdAt", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    sales?: boolean | Client$salesArgs<ExtArgs>
     offers?: boolean | Client$offersArgs<ExtArgs>
+    sales?: boolean | Client$salesArgs<ExtArgs>
     _count?: boolean | ClientCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ClientIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2531,8 +2531,8 @@ export namespace Prisma {
   export type $ClientPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Client"
     objects: {
-      sales: Prisma.$SalePayload<ExtArgs>[]
       offers: Prisma.$OfferPayload<ExtArgs>[]
+      sales: Prisma.$SalePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2936,8 +2936,8 @@ export namespace Prisma {
    */
   export interface Prisma__ClientClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    sales<T extends Client$salesArgs<ExtArgs> = {}>(args?: Subset<T, Client$salesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     offers<T extends Client$offersArgs<ExtArgs> = {}>(args?: Subset<T, Client$offersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OfferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    sales<T extends Client$salesArgs<ExtArgs> = {}>(args?: Subset<T, Client$salesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SalePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3362,30 +3362,6 @@ export namespace Prisma {
   }
 
   /**
-   * Client.sales
-   */
-  export type Client$salesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Sale
-     */
-    select?: SaleSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Sale
-     */
-    omit?: SaleOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: SaleInclude<ExtArgs> | null
-    where?: SaleWhereInput
-    orderBy?: SaleOrderByWithRelationInput | SaleOrderByWithRelationInput[]
-    cursor?: SaleWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: SaleScalarFieldEnum | SaleScalarFieldEnum[]
-  }
-
-  /**
    * Client.offers
    */
   export type Client$offersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3407,6 +3383,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OfferScalarFieldEnum | OfferScalarFieldEnum[]
+  }
+
+  /**
+   * Client.sales
+   */
+  export type Client$salesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Sale
+     */
+    select?: SaleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Sale
+     */
+    omit?: SaleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SaleInclude<ExtArgs> | null
+    where?: SaleWhereInput
+    orderBy?: SaleOrderByWithRelationInput | SaleOrderByWithRelationInput[]
+    cursor?: SaleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: SaleScalarFieldEnum | SaleScalarFieldEnum[]
   }
 
   /**
@@ -5870,8 +5870,8 @@ export namespace Prisma {
     publicKey?: StringNullableFilter<"Client"> | string | null
     useTax?: BoolFilter<"Client"> | boolean
     createdAt?: DateTimeFilter<"Client"> | Date | string
-    sales?: SaleListRelationFilter
     offers?: OfferListRelationFilter
+    sales?: SaleListRelationFilter
   }
 
   export type ClientOrderByWithRelationInput = {
@@ -5882,8 +5882,8 @@ export namespace Prisma {
     publicKey?: SortOrderInput | SortOrder
     useTax?: SortOrder
     createdAt?: SortOrder
-    sales?: SaleOrderByRelationAggregateInput
     offers?: OfferOrderByRelationAggregateInput
+    sales?: SaleOrderByRelationAggregateInput
   }
 
   export type ClientWhereUniqueInput = Prisma.AtLeast<{
@@ -5897,8 +5897,8 @@ export namespace Prisma {
     publicKey?: StringNullableFilter<"Client"> | string | null
     useTax?: BoolFilter<"Client"> | boolean
     createdAt?: DateTimeFilter<"Client"> | Date | string
-    sales?: SaleListRelationFilter
     offers?: OfferListRelationFilter
+    sales?: SaleListRelationFilter
   }, "id" | "token">
 
   export type ClientOrderByWithAggregationInput = {
@@ -6148,8 +6148,8 @@ export namespace Prisma {
     publicKey?: string | null
     useTax: boolean
     createdAt?: Date | string
-    sales?: SaleCreateNestedManyWithoutClientInput
     offers?: OfferCreateNestedManyWithoutClientInput
+    sales?: SaleCreateNestedManyWithoutClientInput
   }
 
   export type ClientUncheckedCreateInput = {
@@ -6160,8 +6160,8 @@ export namespace Prisma {
     publicKey?: string | null
     useTax: boolean
     createdAt?: Date | string
-    sales?: SaleUncheckedCreateNestedManyWithoutClientInput
     offers?: OfferUncheckedCreateNestedManyWithoutClientInput
+    sales?: SaleUncheckedCreateNestedManyWithoutClientInput
   }
 
   export type ClientUpdateInput = {
@@ -6172,8 +6172,8 @@ export namespace Prisma {
     publicKey?: NullableStringFieldUpdateOperationsInput | string | null
     useTax?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sales?: SaleUpdateManyWithoutClientNestedInput
     offers?: OfferUpdateManyWithoutClientNestedInput
+    sales?: SaleUpdateManyWithoutClientNestedInput
   }
 
   export type ClientUncheckedUpdateInput = {
@@ -6184,8 +6184,8 @@ export namespace Prisma {
     publicKey?: NullableStringFieldUpdateOperationsInput | string | null
     useTax?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sales?: SaleUncheckedUpdateManyWithoutClientNestedInput
     offers?: OfferUncheckedUpdateManyWithoutClientNestedInput
+    sales?: SaleUncheckedUpdateManyWithoutClientNestedInput
   }
 
   export type ClientCreateManyInput = {
@@ -6762,13 +6762,6 @@ export namespace Prisma {
     deleteMany?: SaleScalarWhereInput | SaleScalarWhereInput[]
   }
 
-  export type SaleCreateNestedManyWithoutClientInput = {
-    create?: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput> | SaleCreateWithoutClientInput[] | SaleUncheckedCreateWithoutClientInput[]
-    connectOrCreate?: SaleCreateOrConnectWithoutClientInput | SaleCreateOrConnectWithoutClientInput[]
-    createMany?: SaleCreateManyClientInputEnvelope
-    connect?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
-  }
-
   export type OfferCreateNestedManyWithoutClientInput = {
     create?: XOR<OfferCreateWithoutClientInput, OfferUncheckedCreateWithoutClientInput> | OfferCreateWithoutClientInput[] | OfferUncheckedCreateWithoutClientInput[]
     connectOrCreate?: OfferCreateOrConnectWithoutClientInput | OfferCreateOrConnectWithoutClientInput[]
@@ -6776,7 +6769,7 @@ export namespace Prisma {
     connect?: OfferWhereUniqueInput | OfferWhereUniqueInput[]
   }
 
-  export type SaleUncheckedCreateNestedManyWithoutClientInput = {
+  export type SaleCreateNestedManyWithoutClientInput = {
     create?: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput> | SaleCreateWithoutClientInput[] | SaleUncheckedCreateWithoutClientInput[]
     connectOrCreate?: SaleCreateOrConnectWithoutClientInput | SaleCreateOrConnectWithoutClientInput[]
     createMany?: SaleCreateManyClientInputEnvelope
@@ -6790,18 +6783,11 @@ export namespace Prisma {
     connect?: OfferWhereUniqueInput | OfferWhereUniqueInput[]
   }
 
-  export type SaleUpdateManyWithoutClientNestedInput = {
+  export type SaleUncheckedCreateNestedManyWithoutClientInput = {
     create?: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput> | SaleCreateWithoutClientInput[] | SaleUncheckedCreateWithoutClientInput[]
     connectOrCreate?: SaleCreateOrConnectWithoutClientInput | SaleCreateOrConnectWithoutClientInput[]
-    upsert?: SaleUpsertWithWhereUniqueWithoutClientInput | SaleUpsertWithWhereUniqueWithoutClientInput[]
     createMany?: SaleCreateManyClientInputEnvelope
-    set?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
-    disconnect?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
-    delete?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
     connect?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
-    update?: SaleUpdateWithWhereUniqueWithoutClientInput | SaleUpdateWithWhereUniqueWithoutClientInput[]
-    updateMany?: SaleUpdateManyWithWhereWithoutClientInput | SaleUpdateManyWithWhereWithoutClientInput[]
-    deleteMany?: SaleScalarWhereInput | SaleScalarWhereInput[]
   }
 
   export type OfferUpdateManyWithoutClientNestedInput = {
@@ -6818,7 +6804,7 @@ export namespace Prisma {
     deleteMany?: OfferScalarWhereInput | OfferScalarWhereInput[]
   }
 
-  export type SaleUncheckedUpdateManyWithoutClientNestedInput = {
+  export type SaleUpdateManyWithoutClientNestedInput = {
     create?: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput> | SaleCreateWithoutClientInput[] | SaleUncheckedCreateWithoutClientInput[]
     connectOrCreate?: SaleCreateOrConnectWithoutClientInput | SaleCreateOrConnectWithoutClientInput[]
     upsert?: SaleUpsertWithWhereUniqueWithoutClientInput | SaleUpsertWithWhereUniqueWithoutClientInput[]
@@ -6844,6 +6830,20 @@ export namespace Prisma {
     update?: OfferUpdateWithWhereUniqueWithoutClientInput | OfferUpdateWithWhereUniqueWithoutClientInput[]
     updateMany?: OfferUpdateManyWithWhereWithoutClientInput | OfferUpdateManyWithWhereWithoutClientInput[]
     deleteMany?: OfferScalarWhereInput | OfferScalarWhereInput[]
+  }
+
+  export type SaleUncheckedUpdateManyWithoutClientNestedInput = {
+    create?: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput> | SaleCreateWithoutClientInput[] | SaleUncheckedCreateWithoutClientInput[]
+    connectOrCreate?: SaleCreateOrConnectWithoutClientInput | SaleCreateOrConnectWithoutClientInput[]
+    upsert?: SaleUpsertWithWhereUniqueWithoutClientInput | SaleUpsertWithWhereUniqueWithoutClientInput[]
+    createMany?: SaleCreateManyClientInputEnvelope
+    set?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
+    disconnect?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
+    delete?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
+    connect?: SaleWhereUniqueInput | SaleWhereUniqueInput[]
+    update?: SaleUpdateWithWhereUniqueWithoutClientInput | SaleUpdateWithWhereUniqueWithoutClientInput[]
+    updateMany?: SaleUpdateManyWithWhereWithoutClientInput | SaleUpdateManyWithWhereWithoutClientInput[]
+    deleteMany?: SaleScalarWhereInput | SaleScalarWhereInput[]
   }
 
   export type ClientCreateNestedOneWithoutSalesInput = {
@@ -7179,6 +7179,34 @@ export namespace Prisma {
     offerId?: StringNullableFilter<"Sale"> | string | null
   }
 
+  export type OfferCreateWithoutClientInput = {
+    id?: string
+    name: string
+    description?: string | null
+    useTax: boolean
+    createdAt?: Date | string
+    sales?: SaleCreateNestedManyWithoutOfferInput
+  }
+
+  export type OfferUncheckedCreateWithoutClientInput = {
+    id?: string
+    name: string
+    description?: string | null
+    useTax: boolean
+    createdAt?: Date | string
+    sales?: SaleUncheckedCreateNestedManyWithoutOfferInput
+  }
+
+  export type OfferCreateOrConnectWithoutClientInput = {
+    where: OfferWhereUniqueInput
+    create: XOR<OfferCreateWithoutClientInput, OfferUncheckedCreateWithoutClientInput>
+  }
+
+  export type OfferCreateManyClientInputEnvelope = {
+    data: OfferCreateManyClientInput | OfferCreateManyClientInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SaleCreateWithoutClientInput = {
     id?: string
     ghostId: string
@@ -7215,50 +7243,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type OfferCreateWithoutClientInput = {
-    id?: string
-    name: string
-    description?: string | null
-    useTax: boolean
-    createdAt?: Date | string
-    sales?: SaleCreateNestedManyWithoutOfferInput
-  }
-
-  export type OfferUncheckedCreateWithoutClientInput = {
-    id?: string
-    name: string
-    description?: string | null
-    useTax: boolean
-    createdAt?: Date | string
-    sales?: SaleUncheckedCreateNestedManyWithoutOfferInput
-  }
-
-  export type OfferCreateOrConnectWithoutClientInput = {
-    where: OfferWhereUniqueInput
-    create: XOR<OfferCreateWithoutClientInput, OfferUncheckedCreateWithoutClientInput>
-  }
-
-  export type OfferCreateManyClientInputEnvelope = {
-    data: OfferCreateManyClientInput | OfferCreateManyClientInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type SaleUpsertWithWhereUniqueWithoutClientInput = {
-    where: SaleWhereUniqueInput
-    update: XOR<SaleUpdateWithoutClientInput, SaleUncheckedUpdateWithoutClientInput>
-    create: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput>
-  }
-
-  export type SaleUpdateWithWhereUniqueWithoutClientInput = {
-    where: SaleWhereUniqueInput
-    data: XOR<SaleUpdateWithoutClientInput, SaleUncheckedUpdateWithoutClientInput>
-  }
-
-  export type SaleUpdateManyWithWhereWithoutClientInput = {
-    where: SaleScalarWhereInput
-    data: XOR<SaleUpdateManyMutationInput, SaleUncheckedUpdateManyWithoutClientInput>
-  }
-
   export type OfferUpsertWithWhereUniqueWithoutClientInput = {
     where: OfferWhereUniqueInput
     update: XOR<OfferUpdateWithoutClientInput, OfferUncheckedUpdateWithoutClientInput>
@@ -7285,6 +7269,22 @@ export namespace Prisma {
     useTax?: BoolFilter<"Offer"> | boolean
     createdAt?: DateTimeFilter<"Offer"> | Date | string
     clientId?: StringFilter<"Offer"> | string
+  }
+
+  export type SaleUpsertWithWhereUniqueWithoutClientInput = {
+    where: SaleWhereUniqueInput
+    update: XOR<SaleUpdateWithoutClientInput, SaleUncheckedUpdateWithoutClientInput>
+    create: XOR<SaleCreateWithoutClientInput, SaleUncheckedCreateWithoutClientInput>
+  }
+
+  export type SaleUpdateWithWhereUniqueWithoutClientInput = {
+    where: SaleWhereUniqueInput
+    data: XOR<SaleUpdateWithoutClientInput, SaleUncheckedUpdateWithoutClientInput>
+  }
+
+  export type SaleUpdateManyWithWhereWithoutClientInput = {
+    where: SaleScalarWhereInput
+    data: XOR<SaleUpdateManyMutationInput, SaleUncheckedUpdateManyWithoutClientInput>
   }
 
   export type ClientCreateWithoutSalesInput = {
@@ -7451,6 +7451,14 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type OfferCreateManyClientInput = {
+    id?: string
+    name: string
+    description?: string | null
+    useTax: boolean
+    createdAt?: Date | string
+  }
+
   export type SaleCreateManyClientInput = {
     id?: string
     ghostId: string
@@ -7464,12 +7472,30 @@ export namespace Prisma {
     offerId?: string | null
   }
 
-  export type OfferCreateManyClientInput = {
-    id?: string
-    name: string
-    description?: string | null
-    useTax: boolean
-    createdAt?: Date | string
+  export type OfferUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    useTax?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sales?: SaleUpdateManyWithoutOfferNestedInput
+  }
+
+  export type OfferUncheckedUpdateWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    useTax?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sales?: SaleUncheckedUpdateManyWithoutOfferNestedInput
+  }
+
+  export type OfferUncheckedUpdateManyWithoutClientInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    useTax?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SaleUpdateWithoutClientInput = {
@@ -7509,32 +7535,6 @@ export namespace Prisma {
     toClient?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     offerId?: NullableStringFieldUpdateOperationsInput | string | null
-  }
-
-  export type OfferUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    useTax?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sales?: SaleUpdateManyWithoutOfferNestedInput
-  }
-
-  export type OfferUncheckedUpdateWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    useTax?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sales?: SaleUncheckedUpdateManyWithoutOfferNestedInput
-  }
-
-  export type OfferUncheckedUpdateManyWithoutClientInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    useTax?: BoolFieldUpdateOperationsInput | boolean
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

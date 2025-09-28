@@ -1,15 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
-   binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  provider      = "prisma-client-js"
+  output        = "../src/generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -17,50 +10,49 @@ datasource db {
 }
 
 model Offer {
-  id String @id @default(uuid())
-  name String
+  id          String   @id @default(uuid())
+  name        String
   description String?
-  useTax Boolean
-  createdAt DateTime @default(now())
-  clientId  String
-  client    Client   @relation(fields: [clientId], references: [id])
-  sales Sale[]
+  useTax      Boolean
+  createdAt   DateTime @default(now())
+  clientId    String
+  client      Client   @relation(fields: [clientId], references: [id])
+  sales       Sale[]
 }
 
-
 model Client {
-  id  String @id @default(uuid())
-  name String
+  id          String   @id @default(uuid())
+  name        String
   description String?
-  token String @unique
-  publicKey String?
-  useTax Boolean
-  sales Sale[]
-  offers Offer[]
-  createdAt        DateTime @default(now())
+  token       String   @unique
+  publicKey   String?
+  useTax      Boolean
+  createdAt   DateTime @default(now())
+  offers      Offer[]
+  sales       Sale[]
 }
 
 model Sale {
-    id  String @id @default(uuid())
-    ghostId String @unique
-    approved Boolean
-    productName String
-    customerName String
-    visible Boolean?
-    amount Float
-    toClient Boolean
-   createdAt        DateTime @default(now())
-   clientId String
-   client Client @relation(fields: [clientId], references: [id])
-   offerId   String? 
-   offer Offer? @relation(fields: [offerId], references: [id])
+  id           String   @id @default(uuid())
+  ghostId      String   @unique
+  approved     Boolean
+  productName  String
+  customerName String
+  visible      Boolean?
+  amount       Float
+  toClient     Boolean
+  createdAt    DateTime @default(now())
+  clientId     String
+  offerId      String?
+  client       Client   @relation(fields: [clientId], references: [id])
+  offer        Offer?   @relation(fields: [offerId], references: [id])
 }
 
 model Checkout {
-    id  String @id @default(uuid())
-    myCheckout String
-    offer String? @unique
-    lastClientCheckout String?
-    updatedAt DateTime @default(now())
-    createdAt DateTime @default(now())
+  id                 String   @id @default(uuid())
+  myCheckout         String
+  offer              String?  @unique
+  lastClientCheckout String?
+  updatedAt          DateTime @default(now())
+  createdAt          DateTime @default(now())
 }
