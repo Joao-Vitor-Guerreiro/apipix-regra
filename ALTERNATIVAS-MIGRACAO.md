@@ -62,3 +62,8 @@ VALUES ('venda-1', 'ghost-123', false, 'Produto Teste', 'Cliente Teste', 100.00,
 
 **Qual opção você prefere?**
 
+
+
+
+
+
