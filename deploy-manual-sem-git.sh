@@ -237,3 +237,4 @@ echo "• Health check: http://localhost:3434/health"
 echo "• Clients: http://localhost:3434/clients"
 echo ""
 echo "⚠️  Lembre-se de configurar suas credenciais reais no arquivo .env!"
+

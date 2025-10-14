@@ -205,3 +205,4 @@ Se ainda houver problemas:
 2. Testar SSH connection: `ssh -T git@github.com`
 3. Verificar permissões do repositório
 4. Usar deploy manual como alternativa
+
