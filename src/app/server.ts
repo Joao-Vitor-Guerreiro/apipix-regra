@@ -8,6 +8,15 @@ app.use(cors());
 
 app.use(express.json());
 
+// Healthcheck e rota raiz para o proxy do painel
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.get("/", (_req, res) => {
+  res.status(200).json({ message: "API online" });
+});
+
 app.use(ofertRouter);
 
 app.listen(3434, () => {
