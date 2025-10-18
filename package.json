@@ -3,21 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=9.0.0"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsnd --transpile-only --respawn src/app/server.ts",
-    "start": "tsnd --transpile-only src/app/server.ts",
-    "build": "echo \"Build completed - no build step needed for TypeScript\"",
-    "postinstall": "prisma generate",
-    "web": "tsnd --transpile-only src/app/server.ts"
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321",
   "dependencies": {
     "@prisma/client": "^6.16.2",
     "@types/cors": "^2.8.17",

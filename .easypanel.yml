@@ -1,4 +1,0 @@
-build:
-  command: pnpm run build
-start:
-  command: pnpm start
